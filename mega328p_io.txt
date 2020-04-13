@@ -1,0 +1,72 @@
+\ Registers for Atmega 328p.
+-mega328p_io
+marker -mega328p_io
+
+
+$0023 constant pinb  
+$0024 constant ddrb  
+$0025 constant portb 
+$0026 constant pinc
+$0027 constant ddrc
+$0028 constant portc
+$0029 constant pind
+$002a constant ddrd
+$002b constant portd
+
+/ Timers
+$0045 constant TCCR0A
+
+$01 constant bit0
+$02 constant bit1
+$04 constant bit2
+$08 constant bit3
+$10 constant bit4
+$20 constant bit5
+$40 constant bit6
+$80 constant bit7
+: pin_d8 bit0 portb ;
+: pin_d9 bit1 portb ;  
+: pin_d10 bit2 portb ; 
+: pin_d11 bit3 portb ; 
+: pin_d12 bit4 portb ; 
+: pin_d13 bit5 portb ; 
+: pin_a0 bit0 portc ;
+: pin_a1 bit1 portc ;
+: pin_a2 bit2 portc ;
+: pin_a3 bit3 portc ;
+: pin_a4 bit4 portc ;  
+: pin_a5 bit5 portc ;  
+: pin_a6 bit6 portc ;  
+: pin_a7 bit7 portc ;
+: pin_rxd bit0 portd ;
+: pin_txd bit1 portd ;
+: pin_d2 bit2 portd ;   
+: pin_d3 bit3 portd ;   
+: pin_d4 bit4 portd ;
+: pin_d5 bit5 portd ;   
+: pin_d6 bit6 portd ;  
+: pin_d7 bit7 portd ;
+
+: set_pin_inp ( bit_mask address -- )
+  1 -  mclr 
+;
+: set_pin_outp ( bit_mask address -- )
+  1 -  mset 
+;
+: set_pin_pullup ( bit_mask address -- ) 
+  mset 
+;
+: clr_pin_pullup ( bit_mask address -- )
+  mclr 
+;
+
+: rd_pin  ( bit_mask address -- )
+  2 c@ and 0 <> 
+;
+
+: ledoff  
+  pin_d13 mclr 
+;
+: ledon 
+  pin_d13 mset 
+;

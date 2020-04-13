@@ -1,0 +1,41 @@
+\ bell motor
+-bell_motor
+marker -bell_motor
+40  constant LOW_PWM
+255 constant HIGH_PWM
+: motor1a pin_d7 ;
+: motor1b pin_d8 ;
+
+: motor1_init  ( -- )
+  motor1a set_pin_outp
+  motor1b set_pin_outp
+  pin_d6 set_pin_outp
+  init_pwm_pind6
+  127 set_duty_pind6 
+  motor1a mclr
+  motor1b mclr
+;
+
+: motor_fwd 
+  motor1a mset
+  motor1b mclr
+;
+
+: motor_bkwd 
+  motor1a mclr
+  motor1b mset
+;
+
+\ (speed -- pwm_value )
+: calc_pwm  
+    HIGH_PWM
+	LOW_PWM
+	-
+	*
+	100
+	/
+	LOW_PWM
+	+
+;
+
+

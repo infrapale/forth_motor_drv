@@ -1,0 +1,33 @@
+\ mega328p_pwm
+-mega328p_pwm
+marker -mega328p_pwm
+
+$0044     constant TCCR0A
+%1000.0000 constant COM0A1
+%0000.0001 constant WGM00
+%0000.0010 constant WGM01
+
+$006e     constant TIMSK0
+%0000.0001 constant TOIE0
+
+$0047 constant OCR0A
+
+$0045 constant TCCR0B
+%0000.0001 constant CS00
+%0000.0010 constant CS01
+%0000.0100 constant CS02
+
+: init_pwm_pind6   ( -- )
+  COM0A1 WGM00 WGM01 or or
+  TCCR0A
+  c!
+  0 OCR0A c!
+  CS00 CS02 or
+  TCCR0B 
+  c!
+;
+
+ 
+: set_duty_pind6 (duty8 -- )
+  OCR0A c!
+;  
