@@ -19,15 +19,16 @@ $0045 constant TCCR0B
 
 : init_pwm_pind6   ( -- )
   COM0A1 WGM00 WGM01 or or
+  TCCR0A c@ or
   TCCR0A
   c!
   0 OCR0A c!
   CS00 CS02 or
+  TCCR0B c@ or
   TCCR0B 
   c!
 ;
-
  
-: set_duty_pind6 (duty8 -- )
+: set_duty_pind6 ( duty8 -- )
   OCR0A c!
 ;  

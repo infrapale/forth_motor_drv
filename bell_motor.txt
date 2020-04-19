@@ -3,31 +3,40 @@
 marker -bell_motor
 40  constant LOW_PWM
 255 constant HIGH_PWM
+
+\ xu ... x0 u -- xu ... x0 xu
+: pick 2* sp@ + @ ;
+
 : motor1a pin_d7 ;
 : motor1b pin_d8 ;
+: motor1_pwm pin_d6 ;
 
-: motor1_init  ( -- )
+: motor1_init  
   motor1a set_pin_outp
   motor1b set_pin_outp
-  pin_d6 set_pin_outp
+  motor1_pwm set_pin_outp
   init_pwm_pind6
   127 set_duty_pind6 
   motor1a mclr
   motor1b mclr
 ;
 
-: motor_fwd 
+: motor1_fwd 
   motor1a mset
   motor1b mclr
 ;
 
-: motor_bkwd 
+: motor1_bkwd 
   motor1a mclr
   motor1b mset
 ;
+: motor1_stop 
+  motor1a mclr
+  motor1b mclr
+;
 
-\ (speed -- pwm_value )
-: calc_pwm  
+
+: calc_pwm ( speed -- pwm_value )
     HIGH_PWM
 	LOW_PWM
 	-
@@ -38,4 +47,51 @@ marker -bell_motor
 	+
 ;
 
+: motor1_speed  ( speed_p -- )
+    calc_pwm
+	set_duty_pind6
+;
 
+: motor1_acc  ( from to time_ms -- )
+    10 /            ( from to time_10ms)
+    rot calc_pwm  \ (to time_10ms from_pwm)
+	rot calc_pwm  \ ( time_10ms from_pwm to_pwm ) 
+	over          \ ( time_10ms from_pwm to_pwm from_pwm ) 
+	-             \ ( time_10ms from_pwm delta_pwm )
+	rot           \ ( from_pwm delta_pwm time_10ms )
+    0             \ ( from_pwm delta_pwm time_10ms 0 )
+	." before loop "
+	.s cr
+	begin
+	    1+        \ ( from_pwm delta_pwm time_10ms n )
+		dup
+		3 pick    \ ( from_pwm delta_pwm time_10ms n n delta_pwm )
+		*         \ ( from_pwm delta_pwm time_10ms n n*delta_pwm )
+		2 pick    \ ( from_pwm delta_pwm time_10ms n n*delta_pwm time_10ms )
+		/         \ ( from_pwm delta_pwm time_10ms n n*delta_pwm/time_10ms )
+		4 pick    \ ( from_pwm delta_pwm time_10ms n n*delta_pwm/time_10ms from_pwm )
+		+         \ ( from_pwm delta_pwm time_10ms n n*delta_pwm/time_10ms+from_pwm )
+		set_duty_pind6
+		\ .s cr
+		over      \ ( from_pwm delta_pwm time_10ms n time_10ms )
+		over
+		\ .s cr
+		=         \ ( from_pwm delta_pwm time_ms n T/F)
+		10 ms 
+		until
+	drop drop drop drop
+;
+
+: motor1_test 
+    motor1_init
+	motor1_fwd
+	0 100 1000 motor1_acc
+	100 0 1000 motor1_acc
+	motor1_stop
+	50 ms
+	motor1_bkwd
+	0 100 1000 motor1_acc
+	100 0 1000 motor1_acc
+	motor1_stop
+;
+		

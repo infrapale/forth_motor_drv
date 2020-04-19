@@ -1,4 +1,5 @@
-\ Registers for Atmega 328p.
+\ Registers for Atmega 328p
+
 -mega328p_io
 marker -mega328p_io
 
@@ -12,9 +13,6 @@ $0028 constant portc
 $0029 constant pind
 $002a constant ddrd
 $002b constant portd
-
-/ Timers
-$0045 constant TCCR0A
 
 $01 constant bit0
 $02 constant bit1
